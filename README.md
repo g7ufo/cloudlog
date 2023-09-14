@@ -1,6 +1,6 @@
 # Cloudlog Docker Image
 
-This repository only contains Docker build considerations to produce an image from `master` of [`https://github.com/magicbug/Cloudlog`](https://github.com/magicbug/Cloudlog). It will be available as `neilbartley/cloudlog` at:
+This extends the `2m0sql/cloudlog:latest` image to add an entrypoint which updates the configuration file based on environment variables at the start of each run. It will be available as `neilbartley/cloudlog` at:
 
 * [Docker Hub (`neilbartley/cloudlog:latest`)](https://hub.docker.com/r/neilbartley/cloudlog)
 * [GitHub (`ghcr.io/neilbartley/cloudlog:latest`)](https://github.com/neilbartley/ysfreflector/pkgs/container/cloudlog)
@@ -33,6 +33,8 @@ These environment variables are optional:
 * `CALLBOOK` (should be `qrz` or `hamqth`)
 * `CALLBOOK_USERNAME`
 * `CALLBOOK_PASSWORD`
+* `DEVELOPER_MODE`
+* `DATABASE_IS_MARIADB`
 
 Example:
 
@@ -47,12 +49,11 @@ docker run \
   -e CALLBOOK="hamqth" \
   -e CALLBOOK_USERNAME="m0abc" \
   -e CALLBOOK_PASSWORD="supersecret" \
+  -e DEVELOPER_MODE="no" \
+  -e DATABASE_IS_MARIADB="yes" \
   -p 80:80/tcp \
   -name=cloudlog \
   ghcr.io/neilbartley/cloudlog:latest
 ```
 
-# Contact
-
 73, G7UFO
-g7ufo@neil.bar
