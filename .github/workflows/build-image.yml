@@ -1,11 +1,11 @@
 name: Build image
 
 on:
-  push:
-    branches:
-      - master
-  schedule:
-    - cron: '0 1 * * 1' # Weelky on a Monday
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Latest version of Cloudlog to build'
+        required: true
 
 jobs:
   build_and_push:
@@ -18,41 +18,36 @@ jobs:
 
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to Docker Hub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v3
-        with:
-          images: |
-            neilbartley/cloudlog
-            ghcr.io/neilbartley/cloudlog
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v1
+      - name: Log in to the GitHub Container registry
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Generate Docker image timestamp tag
-        id: image-tag
-        run: echo "::set-output name=timestamp::$(date +'%Y%m%d%H%M%S')"
-
       - name: Build and push Docker images
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         with:
           context: .
+          build-args: RELEASE_VERSION=${{ github.event.inputs.release_version }}
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: |
             neilbartley/cloudlog:latest
-            neilbartley/cloudlog:${{ steps.image-tag.outputs.timestamp }}
+            neilbartley/cloudlog:${{ github.event.inputs.release_version }}
             ghcr.io/neilbartley/cloudlog:latest
-            ghcr.io/neilbartley/cloudlog:${{ steps.image-tag.outputs.timestamp }}
-          labels: ${{ steps.meta.outputs.labels }}
+            ghcr.io/neilbartley/cloudlog:${{ github.event.inputs.release_version }}
