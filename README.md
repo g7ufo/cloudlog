@@ -2,10 +2,7 @@
 
 This resurrects the [now defunct](https://github.com/magicbug/Cloudlog/commit/46652555073ef0b26ff6c2b46f41db05d340c1d7) offical Cloudlog Docker image and combines it with my modification to allow configuration to be defined at runtime (either via `docker-compose.yml` or `docker run`) and make the container in which this runs disposable.
 
-The images will be tagged with the Cloudlog version and available from:
-
-* [GitHub (`ghcr.io/neilbartley/cloudlog:latest`)](https://github.com/neilbartley/ysfreflector/pkgs/container/cloudlog)
-* [Docker Hub (`neilbartley/cloudlog:latest`)](https://hub.docker.com/r/neilbartley/cloudlog)
+The images will be tagged with the Cloudlog version and available from: [GitHub](https://github.com/g7ufo/cloudlog/pkgs/container/cloudlog).
 
 ## Donations
 
