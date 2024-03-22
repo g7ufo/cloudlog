@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# This script is run when the container starts and is responsible for creeating the Cloudlog database
+# and application config file amongst a few other things. Everything is commented.
+#
+# If there are any upstream changes to these files this might break. Open an issue on GitHub if I've
+# not already fixed!
+
 # Ensure required env vars are set
 ENV_VAR_REQUIRED='LOCATOR BASE_URL DATABASE_HOSTNAME DATABASE_NAME DATABASE_USERNAME DATABASE_PASSWORD'
 for ENV_VAR in ${ENV_VAR_REQUIRED}; do
