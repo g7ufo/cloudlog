@@ -1,0 +1,93 @@
+services:
+  caddy:
+    container_name: caddy-gen
+    image: wemakeservices/caddy-gen:latest
+    restart: unless-stopped
+    ports:
+      - 443:443
+      - 80:80
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - caddy:/data/caddy
+
+  mariadb:
+    container_name: mariadb
+    image: mariadb:10.11
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: m9abc_log
+      MARIADB_ROOT_PASSWORD: supersecretrootpassword
+    volumes:
+      - mariadb:/var/lib/mysql
+
+  cloudlog:
+    container_name: cloudlog
+    image: ghcr.io/g7ufo/cloudlog:2.6.7
+    restart: unless-stopped
+    environment:
+      LOCATOR: IO94XX
+      BASE_URL: https://log.m9abc.radio/
+      CALLBOOK: qrz
+      CALLBOOK_USERNAME: m9abc
+      CALLBOOK_PASSWORD: supersecretcallbookpassword
+      CLOUDLOG_LOGGING: 0
+      DATABASE_HOSTNAME: mariadb
+      DATABASE_NAME: m9abc_log
+      DATABASE_USERNAME: m9abc
+      DATABASE_PASSWORD: supersecretlogpassword
+      DATABASE_IS_MARIADB: yes
+      DEVELOPER_MODE: no
+    volumes:
+      - cloudlog-eqsl:/var/www/html/images/eqsl_card_images
+      - cloudlog-backup:/var/www/html/backup
+      - cloudlog-uploads:/var/www/html/uploads
+    labels:
+      virtual.host: log.m9abc.radio
+      virtual.port: 80
+      virtual.tls: op@m9abc.radio
+      ofelia.enabled: true
+      ofelia.job-exec.dummy-cl.schedule: "@every 60m"
+      ofelia.job-exec.dummy-cl.command: touch /tmp/cron-dummy
+      ofelia.job-exec.upload-qsos-clublog.schedule: 0 */6 * * *
+      ofelia.job-exec.upload-qsos-clublog.command: curl --silent http://localhost/index.php/clublog/upload
+      ofelia.job-exec.upload-qsos-lotw.schedule: 0 */1 * * *
+      ofelia.job-exec.upload-qsos-lotw.command: curl --silent http://localhost/index.php/lotw/lotw_upload
+      ofelia.job-exec.upload-qsos-qo100dx.schedule: 0 19 * * *
+      ofelia.job-exec.upload-qsos-qo100dx.command: curl --silent http://localhost/index.php/webadif/export
+      ofelia.job-exec.upload-qsos-qrz.schedule: 6 */6 * * *
+      ofelia.job-exec.upload-qsos-qrz.command: curl --silent http://localhost/index.php/qrz/upload
+      ofelia.job-exec.sync-qsos-eqsl.schedule: 9 */6 * * *
+      ofelia.job-exec.sync-qsos-eqsl.command: curl --silent http://localhost/index.php/eqsl/sync
+      ofelia.job-exec.update-lotw-users-db.schedule: "@weekly"
+      ofelia.job-exec.update-lotw-users-db.command: curl --silent http://localhost/index.php/lotw/load_users
+      ofelia.job-exec.update-lotw-users-activity.schedule: 10 1 * * 1
+      ofelia.job-exec.update-lotw-users-activity.command: curl --silent http://localhost/index.php/update/lotw_users
+      ofelia.job-exec.update-clublog-scp-database.schedule: "@weekly"
+      ofelia.job-exec.update-clublog-scp-database.command: curl --silent http://localhost/index.php/update/update_clublog_scp
+      ofelia.job-exec.update-dok.schedule: "@monthly"
+      ofelia.job-exec.update-dok.command: curl --silent http://localhost/index.php/update/update_dok
+      ofelia.job-exec.update-sota.schedule: "@monthly"
+      ofelia.job-exec.update-sota.command: curl --silent http://localhost/index.php/update/update_sota
+      ofelia.job-exec.update-wwff.schedule: "@monthly"
+      ofelia.job-exec.update-wwff.command: curl --silent http://localhost/index.php/update/update_wwff
+      ofelia.job-exec.update-pota.schedule: "@monthly"
+      ofelia.job-exec.update-pota.command: curl --silent http://localhost/index.php/update/update_pota
+
+  cron:
+    container_name: ofelia-cron
+    image: mcuadros/ofelia:latest
+    depends_on:
+      - cloudlog
+    command: daemon --docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      ofelia.job-local.dummy.schedule: "@weekly"
+      ofelia.job-local.dummy.command: date
+
+volumes:
+  caddy:
+  cloudlog-eqsl:
+  cloudlog-backup:
+  cloudlog-uploads:
+  mariadb:
