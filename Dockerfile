@@ -17,21 +17,27 @@ RUN tar zxzf /${RELEASE_VERSION}.tar.gz --strip-components=1
 ####################################################################################################
 FROM php:8.2-apache
 
-ENV LOCATOR set_me
-ENV BASE_URL set_me
+ENV LOCATOR=set_me
+ENV BASE_URL=set_me
 
-ENV CALLBOOK set_me
-ENV CALLBOOK_USERNAME set_me
-ENV CALLBOOK_PASSWORD set_me
+ENV CALLBOOK=set_me
+ENV CALLBOOK_USERNAME=set_me
+ENV CALLBOOK_PASSWORD=set_me
 
-ENV DATABASE_HOSTNAME set_me
-ENV DATABASE_NAME set_me
-ENV DATABASE_USERNAME set_me
-ENV DATABASE_PASSWORD set_me
+ENV DATABASE_HOSTNAME=set_me
+ENV DATABASE_NAME=set_me
+ENV DATABASE_USERNAME=set_me
+ENV DATABASE_PASSWORD=set_me
 
-ENV DEVELOPER_MODE set_me
-ENV DATABASE_IS_MARIADB set_me
-ENV CLOUDLOG_LOGGING set_me
+ENV DEVELOPER_MODE=no
+ENV DATABASE_IS_MARIADB=yes
+
+#	0 = Disables logging, Error logging TURNED OFF (default)
+#	1 = Error Messages (including PHP errors)
+#	2 = Debug Messages
+#	3 = Informational Messages
+#	4 = All Messages
+ENV CLOUDLOG_LOGGING=0
 
 RUN apt-get update && \
     apt-get install -y git curl libxml2-dev libonig-dev && \
