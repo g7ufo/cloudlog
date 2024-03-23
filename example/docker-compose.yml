@@ -30,6 +30,7 @@ services:
       CALLBOOK: qrz
       CALLBOOK_USERNAME: m9abc
       CALLBOOK_PASSWORD: supersecretcallbookpassword
+      CLOUDLOG_LOGGING: 0
       DATABASE_HOSTNAME: mariadb
       DATABASE_NAME: m9abc_log
       DATABASE_USERNAME: m9abc
