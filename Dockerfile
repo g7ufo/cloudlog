@@ -3,11 +3,10 @@
 ####################################################################################################
 FROM debian:12-slim AS release-unpacker
 
-ARG RELEASE_VERSION
-ADD https://github.com/magicbug/Cloudlog/archive/refs/tags/${RELEASE_VERSION}.tar.gz /
+COPY cloudlog-release.tar.gz /
 
 WORKDIR /cloudlog-release
-RUN tar zxzf /${RELEASE_VERSION}.tar.gz --strip-components=1 && \
+RUN tar zxzf /cloudlog-release.tar.gz --strip-components=1 && \
     rm -fr install
 
 ####################################################################################################
