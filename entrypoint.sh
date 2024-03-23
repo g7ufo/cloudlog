@@ -64,9 +64,7 @@ else
   echo "Unknown callbook ${CALLBOOK}, should be qrz or hamqth"
 fi
 
-if [ "${CLOUDLOG_LOGGING:-no}" == "yes" ] ; then
-  echo "Enabling Cloudlog logging"
-  sed -E -i "s/$config\['log_threshold'\].*/$config\['log_threshold'\] = 1;/" $CL_CONFIG
-fi
+echo "Setting Cloudlog logging to ${CLOUDLOG_LOGGING}"
+sed -E -i "s/$config\['log_threshold'\].*/$config\['log_threshold'\] = ${CLOUDLOG_LOGGING};/" $CL_CONFIG
 
 exec "$@"
