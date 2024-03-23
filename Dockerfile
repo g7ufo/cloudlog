@@ -7,7 +7,8 @@ ARG RELEASE_VERSION
 ADD https://github.com/magicbug/Cloudlog/archive/refs/tags/${RELEASE_VERSION}.tar.gz /
 
 WORKDIR /cloudlog-release
-RUN tar zxzf /${RELEASE_VERSION}.tar.gz --strip-components=1
+RUN tar zxzf /${RELEASE_VERSION}.tar.gz --strip-components=1 && \
+    rm -fr install
 
 ####################################################################################################
 # Main image build.
